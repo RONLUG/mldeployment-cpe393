@@ -2,7 +2,7 @@
 
 ## Important!!!
 Model training can found in [`model experiments.ipynb`](<model experiments.ipynb>)\
-step 1-4 files are at [`step-4` branch](https://github.com/RONLUG/mldeployment-cpe393/tree/step-4#)\ 
+step 1-4 files are at [`step-4` branch](https://github.com/RONLUG/mldeployment-cpe393/tree/step-4#) \
 Sorry for late submission ˙◠˙
 
 ---
