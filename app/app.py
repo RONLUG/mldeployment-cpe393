@@ -1,15 +1,21 @@
 from flask import Flask, request, jsonify, abort, redirect
 import pickle
 import numpy as np
-import sys
-import json
+import pandas as pd
+
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
 
 
 # Load the trained model
-with open("model.pkl", "rb") as f:
+with open("model_house.pkl", "rb") as f:
     model = pickle.load(f)
+
+with open("model_scaler.pkl", "rb") as f:
+    scaler = pickle.load(f)
 
 
 @app.errorhandler(400)
@@ -28,16 +34,16 @@ def health():
 @app.route("/predict", methods=["POST"])
 def predict():
     data = request.get_json()
-    if "features" not in data:
-        abort(400, description="Can't access data.features from data")
-    try: 
-        if np.array(data["features"]).shape[1] != 4:
-            abort(400, description="Invalid data.features format, data.features must be array with shape [n, 4]")
-    except:
-        abort(400, description="Invalid data.features format, data.features must be array with shape [n, 4]")
+    keys = ["area", "stories", "bathrooms"]
 
-    input_features = np.array(data["features"]).reshape(2, -1)
-    prediction = model.predict_proba(input_features)
-    pred_results = zip(np.argmax(prediction, 1).tolist(), np.max(prediction, 1).tolist())
-    json_key = ["prediction", "confidence"]
-    return jsonify([dict(zip(json_key, pred)) for pred in pred_results])
+    for k in keys:
+        if k not in data:
+            abort(400, description=f"Can't access data.{k} from data")
+
+    raw_input = pd.DataFrame(data)
+    input_features = pd.DataFrame(scaler.transform(raw_input), columns=raw_input.columns)
+
+    prediction = model.predict(input_features)
+    prediction_list = [{"predict_price": float(x)} for x in prediction]
+
+    return jsonify(prediction_list)
