@@ -33,7 +33,7 @@ curl -X POST http://localhost:9000/predict \
 
 expected output:
 ```json
-{"area": [300, 200], "stories": [2, 2], "bathrooms": [3, 1]}
+[{"predict_price":5373324.557230508},{"predict_price":2612353.46388657}]
 ```
 
 
